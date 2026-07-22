@@ -7,7 +7,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.unitedlands.unitedchat.Formatter;
+import org.unitedlands.unitedchat.utils.Formatter;
 import org.unitedlands.unitedchat.UnitedChat;
 
 import com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent;

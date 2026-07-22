@@ -6,7 +6,7 @@
 
     <groupId>org.unitedlands</groupId>
     <artifactId>UnitedChat</artifactId>
-    <version>3.3.3</version>
+    <version>3.3.4</version>
     <packaging>jar</packaging>
 
     <name>UnitedChat</name>
@@ -57,6 +57,35 @@
         </resources>
     </build>
 
+    <profiles>
+        <profile>
+            <id>local-deploy</id>
+            <activation>
+                <file><exists>.local-deploy</exists></file>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-shade-plugin</artifactId>
+                        <version>3.2.4</version>
+                        <executions>
+                            <execution>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>shade</goal>
+                                </goals>
+                                <configuration>
+                                    <outputFile>../_server/plugins/${project.build.finalName}.jar</outputFile>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+
     <repositories>
         <repository>
             <id>papermc-repo</id>
@@ -96,7 +125,7 @@
         <dependency>
             <groupId>com.palmergames.bukkit</groupId>
             <artifactId>TownyChat</artifactId>
-            <version>0.117</version>
+            <version>0.119</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -112,4 +141,5 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+
 </project>

@@ -1,18 +1,16 @@
-package org.unitedlands.unitedchat.player;
+package org.unitedlands.unitedchat.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.unitedlands.unitedchat.utils.Config;
 import org.unitedlands.unitedchat.utils.Formatter;
 import org.unitedlands.unitedchat.UnitedChat;
 
 import com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent;
-
-import java.util.List;
 
 public class PlayerListener implements Listener {
 
@@ -26,20 +24,12 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        FileConfiguration config = plugin.getConfig();
-        List<String> firstMotd = config.getStringList("messages.first-join-motd");
-        List<String> motd = config.getStringList("messages.motd");
-        Player p = event.getPlayer();
+        var player = event.getPlayer();
+        var motd = player.hasPlayedBefore()
+                ? Config.get().motd()
+                : Config.get().firstJoinMotd();
 
-        if (p.hasPlayedBefore()) {
-            for (String s : motd) {
-                p.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(p, s)));
-            }
-        } else {
-            for (String s : firstMotd) {
-                p.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(p, s)));
-            }
-        }
+        motd.forEach(str -> player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, str))));
     }
 
     @EventHandler
@@ -47,9 +37,7 @@ public class PlayerListener implements Listener {
         
         Player player = event.getPlayer();
 
-        String message = event.getMessage();
-        message = message.replace("§f", ""); // remove weird color
-
+        String message = event.getMessage().replace("§f", ""); // remove weird color
         String finalizedMessage = formatter.finalizeMessage(player, message);
 
         if (plugin.getChatSettingsManager().isGradientEnabled(player)) {

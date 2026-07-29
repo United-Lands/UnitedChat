@@ -10,7 +10,81 @@ features:
   - tabprefix
   - tabnation
   - tabtown
-  - chatgames
+  - quiz
+
+###################################################
+# +---------------------------------------------+ #
+# |                   Quiz                      | #
+# +---------------------------------------------+ #
+###################################################
+
+quiz:
+  # Can be enabled/disabled via /uc quiz toggle on/off
+  enabled: false
+  # Time (in minutes) between each quiz question.
+  interval: 10
+  # Minimum number of players online for a quiz question to be asked.
+  min-players: 2
+  # Days before a question becomes eligible again.
+  cooldown-days: 30
+  # Reward (in money) for answering a quiz question correctly.
+  payout: 500
+  # Sound when a quiz question is asked.
+  sound:
+    name: "minecraft:entity.experience_orb.pickup"
+    volume: 1.0
+    pitch: 1.0
+  header: "\n\n<red><st>+|✦                      </st><bold>[ <white>❓ Quiz</white> ]</bold><st>                     |✦+</st></red>\n"
+  footer: "\n<red><st>+|✦</st><st>                          +✦+                          </st><st>|✦+</st></red>\n\n"
+  answer-prompt: "<gray><italic>              ✎ Type your answer in chat!</italic></gray>"
+  # Available placeholders: %letter%, %choice%
+  choice-format: "  <yellow>%letter%</yellow> <white>%choice%</white>"
+  # How many characters per line before the text wraps to the next line.
+  word-wrap-length: 49
+  bossbar-title: "<yellow>❓ Quiz</yellow>"
+  # How long (in seconds) players have to answer before time runs out.
+  answer-timeout: 15
+  # Cooldown (in seconds) between multiple-choice attempts per player (prevents A/B/C/D spam).
+  mc-attempt-cooldown: 8
+  # Available placeholders: %bar%
+  cooldown-bar: "<gray>Answer available in: </gray>%bar%"
+  cooldown-ready: "<green>✔ Answer available!</green>"
+  # Sound when a quiz question ends.
+  end-sound:
+    name: "minecraft:entity.player.levelup"
+    volume: 1.0
+    pitch: 1.2
+  # Available placeholders: %player%, %answer%
+  correct-announcement: "\n<green>✔ <bold>%player%</bold> answered correctly! The answer was <bold>%answer%</bold>.</green>\n"
+  timeout-announcement: "\n<red>✖ Time's up! Nobody answered correctly. The answer was <bold>%answer%</bold>.</red>\n"
+  # Available placeholders: %name%, %answer%, %question%
+  discord-announcement: "**%name%** has correctly answered **%answer%** to the question:\\n> *%question%*"
+  discord-webhook-url: "<WEBHOOK_URL_HERE>"
+  no-questions: "<red>No quiz questions are currently available. Please contact the owner.</red>"
+  # Available placeholders: %word%
+  word-scramble-prompt: "Unscramble this word: <yellow><bold>%word%</bold></yellow>"
+  # Available placeholders: %formula%
+  math-prompt: "What is <yellow><bold>%formula%</bold></yellow> ?"
+  highscore:
+    # Available placeholders: %rank%, %name%, %wins%, %wins_label%
+    header: "\n<gold><bold>⭐ Quiz Highscore</bold></gold>"
+    entry: " <gray>#%rank%</gray> <white><bold>%name%</bold></white> <dark_gray>—</dark_gray> <yellow>%wins% %wins_label%</yellow>"
+    # Available placeholders: <prev>, <next>, %page%, %total%
+    page-nav: "\n<prev><gray>    Page %page%/%total%    </gray><next>"
+    empty: "<gray> No entries yet."
+    wins-singular: "win"
+    wins-plural: "wins"
+    page-size: 10
+  # Probability weights (in %) for each question type
+  type-weights:
+    multiple-choice: 40
+    open-text: 40
+    math-formula: 10
+    word-scramble: 10
+  # When a multiple-choice or open-text question is picked, how likely (%) is it to be UL-specific
+  ul-weights:
+    multiple-choice: 75
+    open-text: 75
 
 ###################################################
 # +---------------------------------------------+ #
@@ -25,7 +99,7 @@ broadcaster:
   # Invalid or empty "" names will play no sound.
   sound:
     name: "minecraft:block.note_block.pling"
-    volume: 0.5
+    volume: 0.3
     pitch: 1.2
   messages:
     1:
@@ -76,7 +150,7 @@ broadcaster:
 # +---------------------------------------------+ #
 ###################################################
 
-Presets:
+presets:
   # Pre-configured gradients that can be equipped with an alias rather than typing out the hexes.
   # #hex1:#hex2:#hex3....
   rainbow: "#e07870:#e0aa70:#e3de84:#a3e391:#8de0c1:#8fd2e3:#938de0:#c491e3"
@@ -100,16 +174,19 @@ Presets:
 
 messages:
   prefix: '<bold><red>U</red><white>L</white></bold> Chat <dark_gray>» '
+  payout-message: '<gray>You have received <bold><gold><amount></gold></bold> for answering the quiz question correctly!</gray>'
   chat-toggle-command: '<yellow>Use /chat [Chat Feature] on/off'
   reloaded: '<green>Config reloaded.'
-  toggled-feature: '<feature> successfully set to <toggle>!'
+  toggled-feature: '<grey><feature> successfully set to <b><toggle></b>!</grey>'
   invalid-feature: '<red>Invalid feature.'
+  quiz-forced: '<yellow>Quiz question forced.'
+  quiz-toggled: '<yellow>Quizzes has been <toggle>.'
   reset: '<green>UnitedChat settings reset.'
   no-perm: '<red>You don''t have permission to use this command.'
 
-# +---------------------------------------------+ #
-# |               Join Messages                 | #
-# +---------------------------------------------+ #
+  # +---------------------------------------------+ #
+  # |               Join Messages                 | #
+  # +---------------------------------------------+ #
 
   motd:
     - '<gradient:#ffffff:#ff5555>------------------------------</gradient>'
@@ -124,19 +201,19 @@ messages:
     - '    <red>There are currently <white>%server_online% <red>players online.'
     - '<gradient:#ffffff:#ff5555>------------------------------</gradient>'
 
-# +---------------------------------------------+ #
-# |            Gradient Messages                | #
-# +---------------------------------------------+ #
+  # +---------------------------------------------+ #
+  # |            Gradient Messages                | #
+  # +---------------------------------------------+ #
 
-  gradient-changed: '<green>Gradient changed.'
-  gradient-on: '<green>Gradient enabled.'
-  gradient-command: '<yellow>Use /gradient [toggle] | [preset] | [hexcolor1] [hexcolor2] %player_name%'
-  gradient-set-command: '<yellow>Please provide a preset name or a custom hex color gradient (#RRGGBB:#RRGGBB:#RRGGBB...)'
-  gradient-admin-command: '<yellow>Use /gradient [toggle] | [preset] | [hexcolor1] [hexcolor] |[player]'
-  gradient-off: '<red>Gradient disabled.'
-  gradient-unknown-preset: '<red>Preset not recognized.'
-  gradient-is-off: '<red>Your gradient is disabled.'
-  gradient-is-on: '<red>Your gradient is enabled.'
-  current-gradient: '<red>Your current gradient is: <gradient>'
-  no-perm-gradient: '<red>You don''t have permission to set a custom hex color gradient.'
-  invalid-gradient: "<red>Couldn't find a gradient preset matching this name."
+  gradient-changed: <green>Gradient changed.
+  gradient-on: <green>Gradient enabled.
+  gradient-command: <yellow>Use /gradient [toggle] | [preset] | [hexcolor1] [hexcolor2] %player_name%
+  gradient-set-command: <yellow>Please provide a preset name or a custom hex color gradient (#RRGGBB:#RRGGBB:#RRGGBB...)
+  gradient-admin-command: <yellow>Use /gradient [toggle] | [preset] | [hexcolor1] [hexcolor] |[player]
+  gradient-off: <red>Gradient disabled.
+  gradient-unknown-preset: <red>Preset not recognized.
+  gradient-is-off: <red>Your gradient is disabled.
+  gradient-is-on: <red>Your gradient is enabled.
+  current-gradient: "<red>Your current gradient is: <gradient>"
+  no-perm-gradient: <red>You don''t have permission to set a custom hex color gradient.
+  invalid-gradient: <red>Couldn't find a gradient preset matching this name.

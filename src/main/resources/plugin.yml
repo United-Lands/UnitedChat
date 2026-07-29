@@ -3,9 +3,9 @@ version: '${project.version}'
 main: org.unitedlands.unitedchat.UnitedChat
 api-version: 1.21
 authors: [ Maroon28 ]
-contributors: [Litning11, Theriel_]
+contributors: [ Litning11, Theriel_, G0STG0D ]
 depend: [ Towny, TownyChat ]
-softdepend: [PlaceholderAPI]
+softdepend: [ UnitedLib, PlaceholderAPI, Vault ]
 commands:
   gradient:
     description: Main gradient command, used to set gradients, or enable and disable them

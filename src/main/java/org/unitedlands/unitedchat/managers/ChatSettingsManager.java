@@ -51,8 +51,9 @@ public class ChatSettingsManager {
     public boolean isQuizEnabled(Player player) {
         var pdc = player.getPersistentDataContainer();
         if (!pdc.has(getKey("quiz-enabled"))) {
-            return false;
+            return true;
         }
+
         return pdc.get(getKey("quiz-enabled"), PersistentDataType.BOOLEAN);
     }
 

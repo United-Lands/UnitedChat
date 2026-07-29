@@ -27,6 +27,20 @@ public final class QuizUtils {
     );
     public static final int CD_BARS = 32;
 
+    public static boolean isPlausibleMcAnswer(String raw, Question question) {
+        var input = raw.toLowerCase(Locale.ROOT).strip().replaceAll("[).]+$", "");
+        if (input.isBlank()) return false;
+
+        if (input.length() == 1) {
+            var idx = Character.toUpperCase(input.charAt(0)) - 'A';
+            if (idx >= 0 && idx < question.choices().size()) return true;
+        }
+
+        if (CIRCLED.contains(input)) return true;
+
+        return question.choices().stream().anyMatch(c -> c.equalsIgnoreCase(input));
+    }
+
     public static boolean isCorrect(String raw, Question question) {
         var input = raw.toLowerCase(Locale.ROOT)
                 .strip()

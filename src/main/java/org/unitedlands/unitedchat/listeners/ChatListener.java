@@ -12,13 +12,13 @@ import org.unitedlands.unitedchat.UnitedChat;
 
 import com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent;
 
-public class PlayerListener implements Listener {
+public class ChatListener implements Listener {
 
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Formatter formatter = new Formatter();
     private final UnitedChat plugin;
 
-    public PlayerListener(UnitedChat plugin) {
+    public ChatListener(UnitedChat plugin) {
         this.plugin = plugin;
     }
 
@@ -34,10 +34,13 @@ public class PlayerListener implements Listener {
 
     @EventHandler
     public void onChat(AsyncChatHookEvent event) {
-        
-        Player player = event.getPlayer();
 
+        Player player  = event.getPlayer();
         String message = event.getMessage().replace("§f", ""); // remove weird color
+
+        if (plugin.getQuizManager().isActive() && Config.get().quizChannels().contains(event.getChannel().getName().toLowerCase()))
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getQuizManager().checkAnswer(player, message), 2L);
+
         String finalizedMessage = formatter.finalizeMessage(player, message);
 
         if (plugin.getChatSettingsManager().isGradientEnabled(player)) {

@@ -58,9 +58,10 @@ public record Config(
         int    quizWeightText,
         int    quizWeightMath,
         int    quizWeightWord,
-        int    quizUlWeightMc,
-        int    quizUlWeightText,
-        int    quizCooldownDays,
+        int          quizUlWeightMc,
+        int          quizUlWeightText,
+        int          quizCooldownDays,
+        List<String> quizChannels,
 
         // Gradients
         Map<String, Object> presets,
@@ -127,6 +128,7 @@ public record Config(
         var quizUlWeightMc            = cfg.getInt("quiz.ul-weights.multiple-choice", 75);
         var quizUlWeightText          = cfg.getInt("quiz.ul-weights.open-text", 75);
         var quizCooldownDays          = cfg.getInt("quiz.cooldown-days", 30);
+        var quizChannels              = cfg.getStringList("quiz.channels").stream().map(String::toLowerCase).toList();
 
         var presets = cfg.getConfigurationSection("presets").getValues(false);
 
@@ -182,6 +184,7 @@ public record Config(
                 quizUlWeightMc,
                 quizUlWeightText,
                 quizCooldownDays,
+                quizChannels,
                 presets,
                 messages,
                 prefix,

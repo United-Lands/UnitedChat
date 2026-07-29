@@ -4,13 +4,13 @@ import net.kyori.adventure.text.TextReplacementConfig;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 import org.unitedlands.unitedchat.UnitedChat;
 import org.unitedlands.unitedchat.managers.ChatMessageManager;
 import org.unitedlands.unitedchat.managers.ChatSettingsManager;
+import org.unitedlands.unitedchat.utils.Config;
+import org.unitedlands.unitedchat.utils.Messages;
 
 public class GradientCommand implements CommandExecutor {
 
@@ -25,16 +25,19 @@ public class GradientCommand implements CommandExecutor {
     }
 
     @Override
-    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label,
-            String[] args) {
+    public boolean onCommand(@NotNull CommandSender sender, @NotNull Command cmd, @NotNull String label, String[] args) {
 
-        if (!(sender instanceof Player)) {
+        if (args.length == 0) {
+            sender.sendMessage(messageManager.getMessage(Messages.GRADIENT_COMMAND));
             return false;
         }
-        var player = (Player) sender;
+
+        if (!(sender instanceof Player player)) {
+            return false;
+        }
 
         if (!player.hasPermission("united.chat.gradient")) {
-            player.sendMessage(messageManager.getMessage("no-perm"));
+            player.sendMessage(messageManager.getMessage(Messages.NO_PERM));
             return false;
         }
 
@@ -51,7 +54,7 @@ public class GradientCommand implements CommandExecutor {
         String gradient = settingsManager.getGradient(player).replace(":", "\n- ");
         TextReplacementConfig gradientPlaceholder = TextReplacementConfig.builder().match("<gradient>")
                 .replacement(gradient).build();
-        player.sendMessage(messageManager.getMessage("current-gradient").replaceText(gradientPlaceholder));
+        player.sendMessage(messageManager.getMessage(Messages.CURRENT_GRADIENT).replaceText(gradientPlaceholder));
     }
 
     private void handleGradientToggle(Player player, String[] args) {
@@ -67,39 +70,38 @@ public class GradientCommand implements CommandExecutor {
     private void handleSetGradient(Player player, String[] args) {
 
         if (args.length != 2) {
-            player.sendMessage(messageManager.getMessage("gradient-set-command"));
+            player.sendMessage(messageManager.getMessage(Messages.GRADIENT_SET_COMMAND));
             return;
         }
 
-        if (getPresetSection().contains(args[1])) {
+        if (Config.get().presets().containsKey(args[1])) {
             setGradientPreset(player, args[1]);
             return;
         }
 
         if (args[1].contains("#")) {
-            if (player.hasPermission("united.chat.gradient.all")) {
-                settingsManager.setGradient(player, args[1]);
-                player.sendMessage(messageManager.getMessage("gradient-changed"));
-            } else {
+            if (!player.hasPermission("united.chat.gradient.all"))
+                return;
 
-            }
+            settingsManager.setGradient(player, args[1]);
+            player.sendMessage(messageManager.getMessage(Messages.GRADIENT_CHANGED));
         } else {
-            player.sendMessage(messageManager.getMessage("gradient-set-command"));
+            player.sendMessage(messageManager.getMessage(Messages.GRADIENT_SET_COMMAND));
         }
     }
 
     private void setGradientPreset(Player player, String presetName) {
-        if (getPresetSection().getString(presetName) == null) {
-            player.sendMessage(messageManager.getMessage("gradient-unknown-preset"));
+        if (Config.get().presets().get(presetName) == null) {
+            player.sendMessage(messageManager.getMessage(Messages.GRADIENT_UNKNOWN_PRESET));
             return;
         }
 
         if (player.hasPermission("united.chat.gradient." + presetName)) {
-            String preset = getPresetSection().getString(presetName);
+            String preset = Config.get().presets().get(presetName).toString();
             settingsManager.setGradient(player, preset);
-            player.sendMessage(messageManager.getMessage("gradient-changed"));
+            player.sendMessage(messageManager.getMessage(Messages.GRADIENT_CHANGED));
         } else {
-            player.sendMessage(messageManager.getMessage("no-perm"));
+            player.sendMessage(messageManager.getMessage(Messages.NO_PERM));
         }
     }
 
@@ -107,24 +109,19 @@ public class GradientCommand implements CommandExecutor {
         if (enable) {
             if (!settingsManager.isGradientEnabled(player)) {
                 settingsManager.setGradientEnabled(player, true);
-                player.sendMessage(messageManager.getMessage("gradient-on"));
+                player.sendMessage(messageManager.getMessage(Messages.GRADIENT_ON));
             } else {
-                player.sendMessage(messageManager.getMessage("gradient-is-on"));
+                player.sendMessage(messageManager.getMessage(Messages.GRADIENT_IS_ON));
             }
         } else {
             if (settingsManager.isGradientEnabled(player)) {
                 settingsManager.setGradientEnabled(player, false);
-                player.sendMessage(messageManager.getMessage("gradient-off"));
+                player.sendMessage(messageManager.getMessage(Messages.GRADIENT_OFF));
             } else {
-                player.sendMessage(messageManager.getMessage("gradient-is-off"));
+                player.sendMessage(messageManager.getMessage(Messages.GRADIENT_IS_OFF));
             }
         }
 
-    }
-
-    @Nullable
-    private ConfigurationSection getPresetSection() {
-        return plugin.getConfig().getConfigurationSection("Presets");
     }
 
 }

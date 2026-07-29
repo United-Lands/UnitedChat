@@ -1,16 +1,14 @@
-package org.unitedlands.unitedchat.tabcompleters;
+package org.unitedlands.unitedchat.commands.tabcompleters;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.jetbrains.annotations.Nullable;
 import org.unitedlands.unitedchat.UnitedChat;
+import org.unitedlands.unitedchat.utils.Config;
 
 public class GradientCommandTabCompleter implements TabCompleter {
 
@@ -29,33 +27,24 @@ public class GradientCommandTabCompleter implements TabCompleter {
         List<String> options = null;
         String input = args[args.length - 1];
 
-        if (args.length == 0)
-            return null;
-
         switch (args.length) {
-            case 1:
-                options = gradientCommands;
-                break;
-            case 2:
-                if (args[0].equalsIgnoreCase("toggle")) {
+            case 1 -> options = gradientCommands;
+            case 2 -> {
+                if (args[0].equalsIgnoreCase("toggle"))
                     options = gradientToggleCommands;
-                } else if (args[0].equalsIgnoreCase("set")) {
-                    options = getPresetNames();
-                }
+                else if (args[0].equalsIgnoreCase("set"))
+                    options = Config.get().presets().keySet().stream().toList();
+            }
         }
 
         List<String> completions = null;
-        if (options != null) {
-            completions = options.stream().filter(s -> s.toLowerCase().startsWith(input.toLowerCase()))
-                    .collect(Collectors.toList());
-            Collections.sort(completions);
-        }
-        return completions;
-    }
+        if (options != null)
+            completions = options.stream()
+                    .filter(s -> s.toLowerCase().startsWith(input.toLowerCase()))
+                    .sorted()
+                    .toList();
 
-    private List<String> getPresetNames() {
-        var presetSection = plugin.getConfig().getConfigurationSection("Presets");
-        return new ArrayList<String>(presetSection.getKeys(false));
+        return completions;
     }
 
 }

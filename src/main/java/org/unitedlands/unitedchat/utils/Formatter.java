@@ -1,4 +1,4 @@
-package org.unitedlands.unitedchat;
+package org.unitedlands.unitedchat.utils;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.Component;

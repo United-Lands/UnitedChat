@@ -34,7 +34,7 @@ public class ChatSettingsManager {
     }
 
     public boolean isGradientEnabled(Player player) {
-        PersistentDataContainer pdc = player.getPersistentDataContainer();
+        var pdc = player.getPersistentDataContainer();
         if (getGradient(player) == null) {
             return false;
         }
@@ -42,6 +42,19 @@ public class ChatSettingsManager {
             return false;
         }
         return pdc.get(getKey("gradient-enabled"), PersistentDataType.BOOLEAN);
+    }
+
+    public void setQuizEnabled(Player player, boolean toggle) {
+        player.getPersistentDataContainer().set(getKey("quiz-enabled"), PersistentDataType.BOOLEAN, toggle);
+    }
+
+    public boolean isQuizEnabled(Player player) {
+        var pdc = player.getPersistentDataContainer();
+        if (!pdc.has(getKey("quiz-enabled"))) {
+            return true;
+        }
+
+        return pdc.get(getKey("quiz-enabled"), PersistentDataType.BOOLEAN);
     }
 
     public void toggleChatFeature(Player player, ChatFeature feature, boolean toggle) {

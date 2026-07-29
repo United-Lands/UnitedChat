@@ -6,14 +6,14 @@ import org.bukkit.NamespacedKey;
 import org.bukkit.Registry;
 import org.bukkit.Sound;
 import org.bukkit.SoundCategory;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.unitedlands.unitedchat.UnitedChat;
+import org.unitedlands.unitedchat.utils.Config;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+@SuppressWarnings("unchecked")
 public class BroadcastManager extends BukkitRunnable {
 
     private final UnitedChat plugin;
@@ -30,9 +30,10 @@ public class BroadcastManager extends BukkitRunnable {
         this.plugin = plugin;
         this.broadcasts = loadBroadcasts();
 
-        String configuredSound = plugin.getConfig().getString("broadcaster.sound.name", "").trim();
-        this.soundVolume = (float) plugin.getConfig().getDouble("broadcaster.sound.volume", 1.0);
-        this.soundPitch = (float) plugin.getConfig().getDouble("broadcaster.sound.pitch", 1.2);
+        this.soundVolume = Config.get().broadcastSoundVolume();
+        this.soundPitch = Config.get().broadcastSoundPitch();
+
+        var configuredSound = Config.get().broadcastSoundName();
 
         if (configuredSound.isEmpty()) {
             this.soundName = null;
@@ -53,18 +54,10 @@ public class BroadcastManager extends BukkitRunnable {
     }
 
     private List<List<String>> loadBroadcasts() {
-        List<List<String>> messages = new ArrayList<>();
-        ConfigurationSection section = plugin.getConfig().getConfigurationSection("broadcaster.messages");
-
-        if (section != null) {
-            for (String key : section.getKeys(false)) {
-                List<String> lines = section.getStringList(key);
-                if (!lines.isEmpty()) {
-                    messages.add(lines);
-                }
-            }
-        }
-        return messages;
+        return Config.get().broadcasts().values().stream()
+                .filter(value -> value instanceof List<?>)
+                .map(value -> (List<String>) value)
+                .toList();
     }
 
     @Override

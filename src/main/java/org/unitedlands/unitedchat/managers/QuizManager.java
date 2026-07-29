@@ -142,6 +142,8 @@ public class QuizManager {
         activeQuestion = type != null ? questionOfType(type) : nextQuestion();
         activeBossBar  = QuizUtils.createQuizBossBar();
 
+        plugin.getLogger().info("[Quiz] " + QuizUtils.buildConsoleLog(activeQuestion));
+
         QuizUtils.getQuizEnabledPlayers(plugin).forEach(this::sendQuizQuestionTo);
         startQuiz();
     }

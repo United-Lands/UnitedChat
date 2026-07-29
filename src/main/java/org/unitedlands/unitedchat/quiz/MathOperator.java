@@ -14,7 +14,7 @@ public enum MathOperator {
         }
     },
 
-    MUL("•") {
+    MUL("x") {
         int calculate(int a, int b) {
             return a * b;
         }

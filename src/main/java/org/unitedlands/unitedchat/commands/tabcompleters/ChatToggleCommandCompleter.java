@@ -50,10 +50,14 @@ public class ChatToggleCommandCompleter implements TabCompleter {
                 }
             }
             case 3 -> {
-                if (args[0].equalsIgnoreCase("quiz") && args[1].equalsIgnoreCase("toggle"))
+                if (args[0].equalsIgnoreCase("quiz")) {
+                    if (args[1].equalsIgnoreCase("toggle"))
+                        options = toggleOptions;
+                    else if (args[1].equalsIgnoreCase("force") && sender.hasPermission("united.chat.admin"))
+                        options = List.of("multiple_choice", "open_text", "math_formula", "word_scramble");
+                } else {
                     options = toggleOptions;
-                else if (!args[0].equalsIgnoreCase("quiz"))
-                    options = toggleOptions;
+                }
             }
         }
 

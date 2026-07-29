@@ -62,6 +62,12 @@ public class QuizManager {
         endQuiz(null);
     }
 
+    public void reload() {
+        stop();
+        quizEnabled = plugin.getConfig().getBoolean("quiz.enabled", true);
+        start();
+    }
+
     public void forceNext() {
         forceNext(null);
     }

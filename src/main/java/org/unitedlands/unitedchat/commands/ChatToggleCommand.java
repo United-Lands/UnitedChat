@@ -44,6 +44,7 @@ public class ChatToggleCommand implements CommandExecutor {
             Bukkit.getScheduler().cancelTasks(plugin);
             var intervalTicks = Config.get().broadcastInterval() * 60 * 20;
             new BroadcastManager(plugin).runTaskTimer(plugin, intervalTicks, intervalTicks);
+            plugin.getQuizManager().reload();
 
             sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.RELOADED));
             return true;

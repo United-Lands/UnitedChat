@@ -14,13 +14,13 @@ public enum MathOperator {
         }
     },
 
-    MUL("×") {
+    MUL("•") {
         int calculate(int a, int b) {
             return a * b;
         }
     },
 
-    DIV("÷") {
+    DIV(":") {
         int calculate(int a, int b) {
             return a / b;
         }

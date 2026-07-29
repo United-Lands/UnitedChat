@@ -63,9 +63,12 @@ public class QuizManager {
     }
 
     public void forceNext() {
-        stop();
+        forceNext(null);
+    }
 
-        broadcastRandom(true);
+    public void forceNext(QuestionType type) {
+        stop();
+        broadcastRandom(true, type);
         start();
     }
 
@@ -124,13 +127,29 @@ public class QuizManager {
     }
 
     private void broadcastRandom(boolean forced) {
+        broadcastRandom(forced, null);
+    }
+
+    private void broadcastRandom(boolean forced, QuestionType type) {
         if (!forced && !isEnabled()) return;
 
-        activeQuestion = nextQuestion();
+        activeQuestion = type != null ? questionOfType(type) : nextQuestion();
         activeBossBar  = QuizUtils.createQuizBossBar();
 
         QuizUtils.getQuizEnabledPlayers(plugin).forEach(this::sendQuizQuestionTo);
         startQuiz();
+    }
+
+    private Question questionOfType(QuestionType type) {
+        return switch (type) {
+            case MULTIPLE_CHOICE -> randomFromYml(QuestionType.MULTIPLE_CHOICE);
+            case OPEN_TEXT       -> randomFromYml(QuestionType.OPEN_TEXT);
+            case WORD_SCRAMBLE   -> {
+                var available = words.stream().filter(w -> !storage.isOnCooldown(w)).toList();
+                yield available.isEmpty() ? QuizGenerator.generateMath() : QuizGenerator.generateWordScramble(available);
+            }
+            case MATH_FORMULA    -> QuizGenerator.generateMath();
+        };
     }
 
     private void startQuiz() {

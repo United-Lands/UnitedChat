@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.unitedlands.unitedchat.UnitedChat;
 import org.unitedlands.unitedchat.managers.BroadcastManager;
-
+import org.unitedlands.unitedchat.quiz.QuestionType;
 import org.unitedlands.unitedchat.utils.Config;
 import org.unitedlands.unitedchat.utils.Messages;
 
@@ -55,8 +55,13 @@ public class ChatToggleCommand implements CommandExecutor {
                     sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.NO_PERM));
                     return true;
                 }
+                QuestionType type = null;
+                if (args.length >= 3) {
+                    try { type = QuestionType.valueOf(args[2].toUpperCase()); }
+                    catch (IllegalArgumentException ignored) {}
+                }
                 sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.QUIZ_FORCED));
-                plugin.getQuizManager().forceNext();
+                plugin.getQuizManager().forceNext(type);
                 return true;
             }
             if (args[1].equalsIgnoreCase("toggle") && args.length == 3) {

@@ -39,7 +39,7 @@ public class ChatListener implements Listener {
         String message = event.getMessage().replace("§f", ""); // remove weird color
 
         if (plugin.getQuizManager().isActive() && Config.get().quizChannels().contains(event.getChannel().getName().toLowerCase()))
-            plugin.getServer().getScheduler().runTask(plugin, () -> plugin.getQuizManager().checkAnswer(player, message));
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> plugin.getQuizManager().checkAnswer(player, message), 2L);
 
         String finalizedMessage = formatter.finalizeMessage(player, message);
 

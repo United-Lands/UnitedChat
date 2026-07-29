@@ -210,4 +210,23 @@ public final class QuizUtils {
         }
     }
 
+    public static String buildConsoleLog(Question question) {
+        var plain = PlainTextComponentSerializer.plainText().serialize(MM.deserialize(question.question()));
+        var log   = new StringBuilder(question.type().toString()).append(" | ").append(plain);
+
+        switch (question.type()) {
+
+            case MULTIPLE_CHOICE -> {
+                var choices = question.choices();
+                for (var i = 0; i < choices.size(); i++)
+                    log.append(" ").append((char) (0x24B6 + i)).append(" ").append(choices.get(i));
+                log.append(" | → | ").append(question.correct().getFirst());
+            }
+
+            case OPEN_TEXT -> log.append(" | → | ").append(String.join(", ", question.correct()));
+            default        -> log.append(" | → | ").append(question.correct().getFirst());
+        }
+        return log.toString();
+    }
+
 }

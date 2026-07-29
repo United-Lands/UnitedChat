@@ -37,6 +37,8 @@ public class QuizManager {
     private BukkitTask countdownTask;
     private boolean    quizEnabled;
 
+    private long nextQuizTime = 0;
+
     private final Map<UUID, Pair<Long, BukkitTask>> mcCooldowns = new HashMap<>();
 
     public QuizManager(UnitedChat plugin) {
@@ -53,8 +55,21 @@ public class QuizManager {
         if (quizTask != null)
             return;
 
-        var interval = (long) Config.get().quizInterval() * 60 * 20;
-        quizTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> broadcastRandom(false), interval, interval);
+        var intervalMs = (long) Config.get().quizInterval() * 60 * 1000;
+        var interval   = intervalMs / 50;
+        nextQuizTime   = System.currentTimeMillis() + intervalMs;
+        quizTask = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+            broadcastRandom(false);
+            nextQuizTime = System.currentTimeMillis() + intervalMs;
+        }, interval, interval);
+    }
+
+    public long getNextQuizTime() {
+        return nextQuizTime;
+    }
+
+    public boolean isScheduled() {
+        return quizTask != null;
     }
 
     public void stop() {
@@ -65,7 +80,8 @@ public class QuizManager {
     public void reload() {
         stop();
         quizEnabled = plugin.getConfig().getBoolean("quiz.enabled", true);
-        start();
+        if (QuizUtils.getQuizEnabledPlayers(plugin).size() >= Config.get().quizMinPlayers())
+            start();
     }
 
     public void forceNext() {

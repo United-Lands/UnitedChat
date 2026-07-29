@@ -83,6 +83,14 @@ public class QuizStorage {
         if (sorted.isEmpty()) {
             lines.add(QuizUtils.MM.deserialize(cfg.quizHighscoreEmpty()));
         } else {
+            var ranks = new int[sorted.size()];
+            for (var i = 0; i < sorted.size(); i++) {
+                if (i == 0 || sorted.get(i).getValue().wins != sorted.get(i - 1).getValue().wins)
+                    ranks[i] = i + 1;
+                else
+                    ranks[i] = ranks[i - 1];
+            }
+
             var totalPages  = (int) Math.ceil(sorted.size() / (double) pageSize);
             var clampedPage = Math.max(1, Math.min(page, totalPages));
             var from        = (clampedPage - 1) * pageSize;
@@ -95,7 +103,7 @@ public class QuizStorage {
                         : cfg.quizHighscoreWinPlural();
 
                 lines.add(QuizUtils.MM.deserialize(cfg.quizHighscoreEntry()
-                        .replace("%rank%",       String.valueOf(i + 1))
+                        .replace("%rank%",       String.valueOf(ranks[i]))
                         .replace("%name%",       stats.name)
                         .replace("%wins%",       String.valueOf(stats.wins))
                         .replace("%wins_label%", label)));

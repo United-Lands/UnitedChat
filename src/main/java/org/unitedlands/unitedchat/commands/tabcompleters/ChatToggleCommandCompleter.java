@@ -40,7 +40,7 @@ public class ChatToggleCommandCompleter implements TabCompleter {
             }
             case 2 -> {
                 if (args[0].equalsIgnoreCase("quiz")) {
-                    options = new ArrayList<>(List.of("highscore"));
+                    options = new ArrayList<>(List.of("highscore", "next"));
                     if (sender.hasPermission("united.chat.admin")) {
                         options.add("force");
                         options.add("toggle");

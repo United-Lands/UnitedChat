@@ -18,7 +18,11 @@ public enum Messages {
     GRADIENT_OFF            ("gradient-off"),
     GRADIENT_IS_ON          ("gradient-is-on"),
     GRADIENT_IS_OFF         ("gradient-is-off"),
-    CURRENT_GRADIENT        ("current-gradient");
+    CURRENT_GRADIENT        ("current-gradient"),
+    QUIZ_NEXT               ("quiz-next"),
+    QUIZ_NEXT_ACTIVE        ("quiz-next-active"),
+    QUIZ_NEXT_DISABLED      ("quiz-next-disabled"),
+    QUIZ_NEXT_NOT_RUNNING   ("quiz-next-not-running");
 
     public final String key;
 

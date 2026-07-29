@@ -184,6 +184,10 @@ messages:
   invalid-feature: '<red>Invalid feature.'
   quiz-forced: '<yellow>Quiz question forced.'
   quiz-toggled: '<yellow>Quizzes has been <toggle>.'
+  quiz-next: '<gray>Next quiz in <yellow><bold><time></bold>.</gray>'
+  quiz-next-active: '<gray>A quiz is currently active!'
+  quiz-next-disabled: '<red>Quizzes are currently disabled.'
+  quiz-next-not-running: '<red>Not enough players online for a quiz to be started.'
   reset: '<green>UnitedChat settings reset.'
   no-perm: '<red>You don''t have permission to use this command.'
 

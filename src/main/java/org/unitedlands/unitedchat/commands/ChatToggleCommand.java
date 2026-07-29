@@ -14,6 +14,7 @@ import org.unitedlands.unitedchat.utils.Messages;
 
 import static net.kyori.adventure.text.Component.text;
 import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.component;
+import static net.kyori.adventure.text.minimessage.tag.resolver.Placeholder.unparsed;
 
 import java.util.List;
 
@@ -81,6 +82,21 @@ public class ChatToggleCommand implements CommandExecutor {
                 plugin.getQuizManager().buildHighscore(page).forEach(sender::sendMessage);
                 return true;
             }
+            if (args[1].equalsIgnoreCase("next")) {
+                var qm = plugin.getQuizManager();
+                if (!qm.isEnabled()) {
+                    sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.QUIZ_NEXT_DISABLED));
+                } else if (qm.isActive()) {
+                    sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.QUIZ_NEXT_ACTIVE));
+                } else if (!qm.isScheduled()) {
+                    sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.QUIZ_NEXT_NOT_RUNNING));
+                } else {
+                    var remaining = qm.getNextQuizTime() - System.currentTimeMillis();
+                    sender.sendMessage(plugin.getChatMessageManager().getMessage(Messages.QUIZ_NEXT,
+                            unparsed("time", formatCountdown(remaining))));
+                }
+                return true;
+            }
         }
 
         if (!(sender instanceof Player player))
@@ -126,6 +142,21 @@ public class ChatToggleCommand implements CommandExecutor {
         return true;
     }
 
+
+    private String formatCountdown(long ms) {
+        if (ms <= 0) return "soon";
+        var totalSec = ms / 1000;
+        var min      = totalSec / 60;
+        var sec      = totalSec % 60;
+
+        if (min > 0 && sec > 0)
+            return min + "m " + sec + "s";
+
+        if (min > 0)
+            return min + "m";
+
+        return sec + "s";
+    }
 
     private int parsePageArg(String arg) {
         try { return Math.max(1, Integer.parseInt(arg)); } catch (NumberFormatException e) { return 1; }

@@ -10,7 +10,7 @@ import org.unitedlands.unitedchat.managers.BroadcastManager;
 import org.unitedlands.unitedchat.managers.ChatMessageManager;
 import org.unitedlands.unitedchat.managers.ChatSettingsManager;
 import org.unitedlands.unitedchat.managers.QuizManager;
-import org.unitedlands.unitedchat.listeners.PlayerListener;
+import org.unitedlands.unitedchat.listeners.ChatListener;
 import org.unitedlands.unitedchat.listeners.QuizListener;
 import org.unitedlands.unitedchat.commands.tabcompleters.ChatToggleCommandCompleter;
 import org.unitedlands.unitedchat.commands.tabcompleters.GradientCommandTabCompleter;
@@ -44,7 +44,6 @@ public class UnitedChat extends JavaPlugin {
 
         chatMessageManager  = new ChatMessageManager();
         chatSettingsManager = new ChatSettingsManager(this);
-        quizManager         = new QuizManager(this);
 
         if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") == null) {
             getLogger().warning("[Exception] PlaceholderAPI is required!");
@@ -66,7 +65,9 @@ public class UnitedChat extends JavaPlugin {
             saveResource("quiz/words.txt", false);
         Config.load(getConfig());
 
-        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
+        quizManager = new QuizManager(this);
+
+        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
         
         getCommand("gradient").setExecutor(new GradientCommand(this, chatMessageManager, chatSettingsManager));
         getCommand("gradient").setTabCompleter(new GradientCommandTabCompleter(this));

@@ -85,6 +85,9 @@ quiz:
   ul-weights:
     multiple-choice: 75
     open-text: 75
+  # TownyChat channels in which quiz answers are accepted
+  channels:
+    - general
 
 ###################################################
 # +---------------------------------------------+ #

@@ -95,8 +95,11 @@ public class QuizManager {
     }
 
     public void checkAnswer(Player player, String input) {
-        if (activeQuestion == null || (activeQuestion.type() == QuestionType.MULTIPLE_CHOICE && !canAnswer(player)))
-            return;
+        if (activeQuestion == null) return;
+
+        if (activeQuestion.type() == QuestionType.MULTIPLE_CHOICE)
+            if (!QuizUtils.isPlausibleMcAnswer(input.trim(), activeQuestion) || !canAnswer(player))
+                return;
 
         if (QuizUtils.isCorrect(input.trim(), activeQuestion))
             endQuiz(player);
@@ -104,7 +107,7 @@ public class QuizManager {
 
     private boolean canAnswer(Player player) {
         var cooldown = Config.get().quizMcAttemptCooldown() * 1000L;
-        var last = mcCooldowns.getOrDefault(player.getUniqueId(), Pair.of(0L, null));
+        var last     = mcCooldowns.getOrDefault(player.getUniqueId(), Pair.of(0L, null));
 
         if (System.currentTimeMillis() - last.getLeft() < cooldown)
             return false;

@@ -10,8 +10,7 @@ import org.unitedlands.unitedchat.managers.BroadcastManager;
 import org.unitedlands.unitedchat.managers.ChatMessageManager;
 import org.unitedlands.unitedchat.managers.ChatSettingsManager;
 import org.unitedlands.unitedchat.managers.QuizManager;
-import org.unitedlands.unitedchat.listeners.ChatListener;
-import org.unitedlands.unitedchat.listeners.QuizListener;
+import org.unitedlands.unitedchat.listeners.PlayerListener;
 import org.unitedlands.unitedchat.commands.tabcompleters.ChatToggleCommandCompleter;
 import org.unitedlands.unitedchat.commands.tabcompleters.GradientCommandTabCompleter;
 import org.unitedlands.unitedchat.utils.Config;
@@ -66,8 +65,9 @@ public class UnitedChat extends JavaPlugin {
         Config.load(getConfig());
 
         quizManager = new QuizManager(this);
+        quizManager.start();
 
-        getServer().getPluginManager().registerEvents(new ChatListener(this), this);
+        getServer().getPluginManager().registerEvents(new PlayerListener(this), this);
         
         getCommand("gradient").setExecutor(new GradientCommand(this, chatMessageManager, chatSettingsManager));
         getCommand("gradient").setTabCompleter(new GradientCommandTabCompleter(this));
@@ -78,8 +78,6 @@ public class UnitedChat extends JavaPlugin {
 
         var intervalTicks = Config.get().broadcastInterval() * 60 * 20;
         new BroadcastManager(this).runTaskTimer(this, intervalTicks, intervalTicks);
-
-        getServer().getPluginManager().registerEvents(new QuizListener(this), this);
 
         getLogger().info("UnitedChat initialized.");
     }

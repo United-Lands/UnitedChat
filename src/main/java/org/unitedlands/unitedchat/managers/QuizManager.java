@@ -37,7 +37,8 @@ public class QuizManager {
     private BukkitTask countdownTask;
     private boolean    quizEnabled;
 
-    private long nextQuizTime = 0;
+    private long nextQuizTime  = 0;
+    private long quizStartTime = 0;
 
     private final Map<UUID, Pair<Long, BukkitTask>> mcCooldowns = new HashMap<>();
 
@@ -80,8 +81,7 @@ public class QuizManager {
     public void reload() {
         stop();
         quizEnabled = plugin.getConfig().getBoolean("quiz.enabled", true);
-        if (QuizUtils.getQuizEnabledPlayers(plugin).size() >= Config.get().quizMinPlayers())
-            start();
+        start();
     }
 
     public void forceNext() {
@@ -157,10 +157,12 @@ public class QuizManager {
 
     private void broadcastRandom(boolean forced, QuestionType type) {
         if (!forced && !isEnabled()) return;
+        if (!forced && QuizUtils.getQuizEnabledPlayers(plugin).size() < Config.get().quizMinPlayers()) return;
 
         activeQuestion = type != null ? questionOfType(type) : nextQuestion();
         activeBossBar  = QuizUtils.createQuizBossBar();
 
+        quizStartTime = System.currentTimeMillis();
         plugin.getLogger().info("[Quiz] " + QuizUtils.buildConsoleLog(activeQuestion));
 
         QuizUtils.getQuizEnabledPlayers(plugin).forEach(this::sendQuizQuestionTo);
@@ -224,6 +226,12 @@ public class QuizManager {
             task.cancel();
 
         Bukkit.getOnlinePlayers().forEach(p -> p.hideBossBar(bar));
+
+        var elapsed = (System.currentTimeMillis() - quizStartTime) / 1000.0;
+        if (winner != null)
+            plugin.getLogger().info(String.format("[Quiz] Answered by %s in %.1fs", winner.getName(), elapsed));
+        else
+            plugin.getLogger().info(String.format("[Quiz] Timed out after %.1fs (no answer)", elapsed));
 
         var cfg = Config.get();
         if (!cfg.quizEndSoundName().isBlank())

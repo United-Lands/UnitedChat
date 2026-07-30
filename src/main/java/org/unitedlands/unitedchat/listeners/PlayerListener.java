@@ -2,6 +2,7 @@ package org.unitedlands.unitedchat.listeners;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,13 +13,13 @@ import org.unitedlands.unitedchat.UnitedChat;
 
 import com.palmergames.bukkit.TownyChat.events.AsyncChatHookEvent;
 
-public class ChatListener implements Listener {
+public class PlayerListener implements Listener {
 
     private final MiniMessage miniMessage = MiniMessage.miniMessage();
     private final Formatter formatter = new Formatter();
     private final UnitedChat plugin;
 
-    public ChatListener(UnitedChat plugin) {
+    public PlayerListener(UnitedChat plugin) {
         this.plugin = plugin;
     }
 
@@ -30,6 +31,8 @@ public class ChatListener implements Listener {
                 : Config.get().firstJoinMotd();
 
         motd.forEach(str -> player.sendMessage(miniMessage.deserialize(PlaceholderAPI.setPlaceholders(player, str))));
+
+        Bukkit.getScheduler().runTask(plugin, () -> plugin.getQuizManager().sendQuizQuestionTo(event.getPlayer()));
     }
 
     @EventHandler

@@ -27,8 +27,8 @@ public class QuizManager {
     private static final ThreadLocalRandom RANDOM = ThreadLocalRandom.current();
 
     private final UnitedChat     plugin;
-    private final List<Question> questions;
-    private final List<String>   words;
+    private List<Question> questions;
+    private List<String>   words;
     private final QuizStorage    storage;
 
     private BukkitTask quizTask;
@@ -80,7 +80,12 @@ public class QuizManager {
 
     public void reload() {
         stop();
+
         quizEnabled = plugin.getConfig().getBoolean("quiz.enabled", true);
+        questions   = QuizUtils.loadQuestions(plugin);
+        words       = QuizUtils.loadWords(plugin);
+
+        plugin.getLogger().info("Reloaded " + questions.size() + " quiz questions, " + words.size() + " scramble words.");
         start();
     }
 

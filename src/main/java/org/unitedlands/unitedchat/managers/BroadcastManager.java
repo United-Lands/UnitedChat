@@ -63,6 +63,7 @@ public class BroadcastManager extends BukkitRunnable {
     @Override
     public void run() {
         if (broadcasts.isEmpty()) return;
+        if (plugin.getQuizManager().isActive()) return;
 
         List<String> broadcast = broadcasts.get(random.nextInt(broadcasts.size()));
         for (String line : broadcast) {
